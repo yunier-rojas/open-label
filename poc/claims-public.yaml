@@ -1,0 +1,23 @@
+i_id: shop-1
+i_cert: cert-id-1
+s_id: shop-1
+s_name: Shop 1
+s_address: Assiesstraat 2, 9999 ZZ, Zwolle, NL
+s_country: NL
+s_postal: 9999 ZZ
+s_city: Zwolle
+p_id: PKG-20250902-98765
+p_weight: 1.2kg
+p_dims: 30x20x10cm
+v_service: express
+v_sig: 1
+v_insure: 100 EUR
+r_address: Oosterdokskade 1, 1011 AD, Amsterdam, NL
+r_person: John Doe
+r_country: NL
+r_postal: 1011 AD
+r_city: Amsterdam
+u_private: https://merchant.com/extras/PKG-20250902-98765
+u_updates: https://merchant.com/webhooks/updates/PKG-20250902-98765
+x_version: 0.1
+x_timestamp: "2025-09-02T14:32:00Z"
