@@ -1,6 +1,6 @@
 # Open Label
 
-**An experiment in applying cryptography and decentralization to shipping labels.**
+**An experiment in applying cryptography to shipping labels.**
 
 This project explores how entities that ship parcels — such as businesses, fulfillment providers, or third-party logistics (3PLs) — could generate their own shipping labels that are **cryptographically verifiable** and **interoperable across carriers**, without relying on centralized APIs or proprietary formats.
 
@@ -8,8 +8,7 @@ This project explores how entities that ship parcels — such as businesses, ful
 
 ## The Experiment
 
-Today, shipping labels are tightly coupled to carriers, each with their own systems and formats.
-**Open Label** asks a simple question: *what if labels worked like signed digital documents instead?*
+What if labels worked like signed digital documents instead?
 
 In this model, the shipping entity generates a label once, signs it, and shares it. Carriers and third parties can then consume and verify the label’s authenticity and integrity, rather than being the sole issuers.
 
@@ -39,7 +38,7 @@ In this model, the shipping entity generates a label once, signs it, and shares 
 
 ---
 
-## How It Works (Conceptual Flow)
+## How could it work?
 
 1. **Label Generation**
 
@@ -65,9 +64,9 @@ In this model, the shipping entity generates a label once, signs it, and shares 
 
 ## Food for Thought
 
-This is not a finished product — it’s a **conversation starter** about decentralization and logistics. Some open questions include:
+This is not a finished product — it’s a **conversation starter** about decentralization and logistics.
 
 * How could issuers and carriers securely exchange **private claims** or status updates?
-* How should disputes or errors in delivery information be resolved without centralized authority?
-* Could this complement existing logistics standards, or does it point toward a new approach?
+* Could this complement existing logistics standards?
+* What about payments, contracts, pickups, etc?
 
