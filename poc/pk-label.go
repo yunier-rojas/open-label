@@ -32,12 +32,8 @@ func signPayload(payload string, privateKey []byte, passphrase []byte) ([]byte, 
 }
 
 func appendSignature(payload string, signature []byte) string {
-	// Convert payload to string and trim any trailing newlines
 	yamlStr := strings.TrimSpace(payload)
-
-	// Append signature as new YAML field
 	yamlStr += fmt.Sprintf("\nx_sig: %s\n", signature)
-
 	return yamlStr
 }
 
@@ -52,12 +48,12 @@ func main() {
 		log.Fatalf("Unable to read file: %v", err)
 	}
 
-	privateKey, err := os.ReadFile("private.pgp") // Encrypted private key
+	privateKey, err := os.ReadFile("private.pgp")
 	if err != nil {
 		log.Fatalf("Unable to read private key file: %v", err)
 	}
 
-	passphrase := []byte("qwert1234") // Private key passphrase
+	passphrase := []byte("qwert1234")
 
 	// Sign the payload
 	payload := strings.TrimSpace(string(data))
@@ -68,7 +64,7 @@ func main() {
 
 	finalPayload := appendSignature(payload, signature)
 
-	// Write QR Code
+	// Write QR code
 	err = generateQRCode(finalPayload, "qr.png")
 	if err != nil {
 		log.Fatalf("Failed to create QR code: %v", err)
@@ -80,47 +76,55 @@ func main() {
 		log.Fatalf("Failed to write payload file: %v", err)
 	}
 
+	// Parse claims
 	claims := make(map[string]string)
 	err = yaml.Unmarshal([]byte(payload), &claims)
 	if err != nil {
 		log.Fatalf("Failed to unmarshal YAML data: %v", err)
 	}
 
-	// Generate PDF
-	pdf := fpdf.New("P", "mm", "A6", "")
+	// === Generate Landscape PDF Label ===
+	pdf := fpdf.New("L", "mm", "A6", "")
 	pdf.AddPage()
+	width, height := pdf.GetPageSize()
 
-	// Add QR code to PDF
-	pdf.Image("qr.png", 0, 0, 105, 105, false, "", 0, "")
+	// QR code on left
+	pdf.Image("qr.png", 2, 2, 100, 100, false, "", 0, "")
 
-	// Add recipient details to PDF
-	pdf.SetFont("Arial", "B", 15)
-	pdf.Text(5, 110, "Recipient")
-	pdf.SetFont("Arial", "", 10)
+	// Recipient details on right top, but transposed
+	pdf.TransformBegin()
+	pdf.TransformRotate(-90, width/2, width/2)
+
+	pdf.SetFont("Arial", "B", 16)
+	pdf.Text(6, 12, "Recipient")
+	pdf.SetFont("Arial", "", 12)
 	recipientKeys := []string{"r_person", "r_address"}
-	x, y := 5, 115
-	for idx, key := range recipientKeys {
-		value, ok := claims[key]
-		if !ok {
-			log.Fatalf("Missing key: %v", key)
+	y := 20
+	for _, key := range recipientKeys {
+		value := claims[key]
+		if value == "" {
+			value = "[missing]"
 		}
-		pdf.Text(float64(x), float64(y+idx*4), value)
+		pdf.Text(6, float64(y), value)
+		y += 6
 	}
+	// Draw a rectangle for the recipient section
+	pdf.Rect(4, 4, height-10, 30, "D")
 
-	// Add sender details to PDF
-	pdf.SetFont("Arial", "B", 8)
-	pdf.Text(5, 130, "Sender")
-	pdf.SetFont("Arial", "", 5)
-	senderKeys := []string{"s_name", "s_address"}
-	x, y = 5, 134
-	for idx, key := range senderKeys {
-		value, ok := claims[key]
-		if !ok {
-			log.Fatalf("Missing key: %v", key)
-		}
-		pdf.Text(float64(x), float64(y+idx*2), value)
-	}
+	// Sender details
+	pdf.SetFont("Arial", "B", 10)
+	pdf.Text(6, 40, "Sender")
+	pdf.SetFont("Arial", "", 8)
+	sender := claims["s_name"]
+	pdf.Text(6, 45, sender)
+	senderAddress := claims["s_address"]
+	pdf.Text(35, 45, senderAddress)
 
+	pdf.Line(30, 37, 30, 47)
+
+	pdf.TransformEnd()
+
+	// Output PDF
 	err = pdf.OutputFileAndClose("label.pdf")
 	if err != nil {
 		log.Fatalf("Failed to output PDF file: %v", err)
